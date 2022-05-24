@@ -8,6 +8,7 @@ FormatNone = "No format selected, please select at least one format."
 FormatNoneErr = "No format selected, please send /formats to select format."
 
 StickerConvertNotSupport = "Converting this type of sticker is not supported."
+StickersSizeTooLarge = "The {{.FileName}} file is too large to send. Please reduce the number of stickers that need to be packaged."
 
 IdleNewPack = "Packaging has started, please send the sticker or sticker set link."
 IdleAddSticker = "The sticker has been received, please wait for the completion."

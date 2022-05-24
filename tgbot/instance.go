@@ -226,6 +226,19 @@ func (i *instance) sendFileMessage(filePath string) {
 		log.Fatal(err)
 	}
 	fileName := filepath.Base(filePath)
+
+	if len(b) > (1<<20)*50 {
+		i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID: "StickersSizeTooLarge",
+			},
+			TemplateData: map[string]interface{}{
+				"FileName": fileName,
+			},
+		}))
+		return
+	}
+
 	msg := tgbotapi.NewDocument(i.userID, tgbotapi.FileBytes{
 		Name:  fileName,
 		Bytes: b,

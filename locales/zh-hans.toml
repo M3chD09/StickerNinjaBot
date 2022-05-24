@@ -8,6 +8,7 @@ FormatNone = "未选择格式。请至少选择一种格式。"
 FormatNoneErr = "未选择格式，请发送 /formats 来选择格式。"
 
 StickerConvertNotSupport = "不支持转换该类型的贴纸。"
+StickersSizeTooLarge = "{{.FileName}} 文件太大，无法发送。请减少需要打包的表情包数量。"
 
 IdleNewPack = "开始打包，请发送表情包或者表情包集链接。"
 IdleAddSticker = "表情包已收到，请等待完成。"
