@@ -1,10 +1,12 @@
 package filestorage
 
 import (
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync"
 )
 
 var storageRootPath string
@@ -95,9 +97,19 @@ func (u *UserStorage) SaveSticker(url string) {
 }
 
 func (u *UserStorage) SaveStickers(urlList []string) {
-	for _, url := range urlList {
-		u.SaveSticker(url)
+	u.MakeDir("src")
+
+	var wg sync.WaitGroup
+	for x := range urlList {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			sticker := NewStickerFromURL(urlList[a])
+			filePath := filepath.Join(u.SubPath("src"), sticker.FileName())
+			sticker.Save(filePath)
+		}(x)
 	}
+	wg.Wait()
 }
 
 func (u *UserStorage) ConvertStickers() {
@@ -105,14 +117,20 @@ func (u *UserStorage) ConvertStickers() {
 		u.MakeDir(f)
 	}
 
-	filepath.Walk(u.SubPath("src"), func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+	var wg sync.WaitGroup
+	filepath.WalkDir(u.SubPath("src"), func(path string, d fs.DirEntry, err error) error {
+		if d.IsDir() {
 			return nil
 		}
-		for _, f := range u.formats {
-			sticker := NewStickerFromFilePath(path)
-			sticker.Convert(filepath.Join(u.SubPath(f), sticker.ReplaceExt(f)))
-		}
+		wg.Add(1)
+		go func(p string) {
+			defer wg.Done()
+			sticker := NewStickerFromFilePath(p)
+			for _, f := range u.formats {
+				sticker.Convert(filepath.Join(u.SubPath(f), sticker.ReplaceExt(f)))
+			}
+		}(path)
 		return nil
 	})
+	wg.Wait()
 }
