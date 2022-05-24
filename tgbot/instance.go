@@ -17,6 +17,7 @@ import (
 	"github.com/M3chD09/StickerNinjaBot/userdb"
 )
 
+var stickerCountLimit = 100
 var userInstanceCache = userdb.NewCache[int64](time.Second*10, true)
 var bundle *i18n.Bundle
 var langKeyboard = tgbotapi.NewInlineKeyboardMarkup(
@@ -52,6 +53,14 @@ func init() {
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustLoadMessageFile("locales/en.toml")
 	bundle.MustLoadMessageFile("locales/zh-hans.toml")
+}
+
+func Config(count string) {
+	if count != "" {
+		if c, err := strconv.Atoi(count); err == nil && c > 0 {
+			stickerCountLimit = c
+		}
+	}
 }
 
 func GetInstance(userID int64, bot *tgbotapi.BotAPI) *instance {
@@ -211,6 +220,22 @@ func (i *instance) fetchStickers(stickerFileIDs []string) []string {
 		urlList = append(urlList, url)
 	}
 	return urlList
+}
+
+func (i *instance) isStickerCountTooMany(count int) bool {
+	if count <= stickerCountLimit {
+		return false
+	}
+
+	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID: "StickerCountTooMany",
+		},
+		TemplateData: map[string]interface{}{
+			"Count": stickerCountLimit,
+		},
+	}))
+	return true
 }
 
 func (i *instance) sendStickers(stickerFileIDs []string) {

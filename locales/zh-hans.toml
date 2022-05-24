@@ -9,6 +9,7 @@ FormatNoneErr = "未选择格式，请发送 /formats 来选择格式。"
 
 StickerConvertNotSupport = "不支持转换该类型的贴纸。"
 StickersSizeTooLarge = "{{.FileName}} 文件太大，无法发送。请减少需要打包的表情包数量。"
+StickerCountTooMany = "表情包数量太多，最多可以打包{{.Count}}个。请重试。"
 StickersDownload = "[2/4] 已完成下载，开始转换格式，请等待。"
 StickersConvert = "[3/4] 已完成转换，开始打包，请等待。"
 StickersZip = "[4/4] 已完成压缩，开始上传，请等待。"

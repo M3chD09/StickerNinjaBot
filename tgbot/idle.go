@@ -91,6 +91,10 @@ func (s *idleState) addStickerSet(stickerSetName string) {
 	}))
 
 	stickerFileIDs := s.instance.extractStickerSet(stickerSetName)
+	if s.instance.isStickerCountTooMany(len(stickerFileIDs)) {
+		return
+	}
+
 	s.instance.sendStickers(stickerFileIDs)
 }
 

@@ -9,6 +9,7 @@ FormatNoneErr = "No format selected, please send /formats to select format."
 
 StickerConvertNotSupport = "Converting this type of sticker is not supported."
 StickersSizeTooLarge = "The {{.FileName}} file is too large to send. Please reduce the number of stickers that need to be packaged."
+StickerCountTooMany = "The number of stickers that need to be packaged is too many. The maximum number of stickers that can be packaged is {{.Count}}. Please try again."
 StickersDownload = "[2/4] Download completed, start converting format, please wait."
 StickersConvert = "[3/4] Conversion completed, compression started, please wait."
 StickersZip = "[4/4] Compression completed, uploading started, please wait."

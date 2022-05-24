@@ -20,6 +20,10 @@ func (s *packingState) addSticker(stickerFileID string) {
 	s.instance.setState(s.instance.busy)
 	defer s.instance.setState(s.instance.packing)
 
+	if s.instance.isStickerCountTooMany(len(s.instance.stickerFileIDs) + 1) {
+		return
+	}
+
 	s.instance.stickerFileIDs = append(s.instance.stickerFileIDs, stickerFileID)
 	s.instance.sendTextMessage(s.instance.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -36,6 +40,10 @@ func (s *packingState) addStickerSet(stickerSetName string) {
 	defer s.instance.setState(s.instance.packing)
 
 	stickerFileIDs := s.instance.extractStickerSet(stickerSetName)
+	if s.instance.isStickerCountTooMany(len(s.instance.stickerFileIDs) + len(stickerFileIDs)) {
+		return
+	}
+
 	s.instance.stickerFileIDs = append(s.instance.stickerFileIDs, stickerFileIDs...)
 	s.instance.sendTextMessage(s.instance.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
