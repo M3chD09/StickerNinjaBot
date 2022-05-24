@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -194,10 +195,18 @@ func (i *instance) extractStickerSet(stickerSetName string) []string {
 	if err != nil {
 		return []string{}
 	}
-	stickerFileIDs := make([]string, 0)
-	for _, sticker := range stickerSet.Stickers {
-		stickerFileIDs = append(stickerFileIDs, sticker.FileID)
+
+	stickerFileIDs := make([]string, len(stickerSet.Stickers))
+	var wg sync.WaitGroup
+	for x := range stickerSet.Stickers {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			stickerFileIDs[a] = stickerSet.Stickers[a].FileID
+		}(x)
 	}
+	wg.Wait()
+
 	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID: "StickerSetExtract",
@@ -211,14 +220,20 @@ func (i *instance) extractStickerSet(stickerSetName string) []string {
 }
 
 func (i *instance) fetchStickers(stickerFileIDs []string) []string {
-	var urlList []string
-	for _, stickerFileID := range stickerFileIDs {
-		url, err := i.bot.GetFileDirectURL(stickerFileID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		urlList = append(urlList, url)
+	urlList := make([]string, len(stickerFileIDs))
+	var wg sync.WaitGroup
+	for x := range stickerFileIDs {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			url, err := i.bot.GetFileDirectURL(stickerFileIDs[a])
+			if err != nil {
+				log.Fatal(err)
+			}
+			urlList[a] = url
+		}(x)
 	}
+	wg.Wait()
 	return urlList
 }
 
