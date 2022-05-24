@@ -1,0 +1,32 @@
+Help = "Welcome to the StickerPacker bot, you can directly send the sticker or sticker set link, or you can send the following commands:\n/lang - set the language\n/formats - set the format to be converted\n/newpack - Start packing\n/finish - Finish packing\n/cancel - Cancel packing"
+
+LangApply = "Language is set to English."
+
+Formats = "The current format is {{.Formats}}. Please select format. Select again to cancel."
+FormatsApply = "The format is set to {{.Formats}}."
+FormatNone = "No format selected, please select at least one format."
+FormatNoneErr = "No format selected, please send /formats to select format."
+
+StickerConvertNotSupport = "Converting this type of sticker is not supported."
+
+IdleNewPack = "Packaging has started, please send the sticker or sticker set link."
+IdleAddSticker = "The sticker has been received, please wait for the completion."
+IdleAddStickerSet = "The sticker set has been received, please wait for the completion."
+IdleFinish = "You haven't started packing yet, please send /newpack ."
+IdleCancel = "You haven't started packing yet, please send /newpack ."
+
+PackingNewPack = "Packing has already started."
+PackingAddSticker = "This sticker has been added, totaling {{.Count}}. Send /finish to complete, /cancel to cancel."
+PackingAddStickerSet = "This sticker set has been added, totaling {{.Count}}. Send /finish to complete, /cancel to cancel."
+PackingFinishEmpty = "No sticker or sticker set link has been sent and cannot be packaged. To pack, please send /newpack ."
+PackingFinishStart = "[1/4] Start processing, a total of {{.Count}}. Please wait."
+PackingFinishDownload = "[2/4] Download completed, start converting format, please wait."
+PackingFinishConvert = "[3/4] Conversion completed, compression started, please wait."
+PackingFinishZip = "[4/4] Compression completed, uploading started, please wait。"
+PackingCancel = "Packing cancelled."
+
+Busy = "Packing is in progress, please wait and try again."
+
+[StickerSetExtract]
+one = "{{.Count}} sticker have been parsed in this sticker set."
+other = "{{.Count}} stickers have been parsed in this sticker set."

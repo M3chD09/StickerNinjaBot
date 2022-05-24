@@ -1,0 +1,30 @@
+Help = "欢迎使用StickerPacker机器人，你可以直接发送表情包或表情集链接，也可以发送以下指令：\n/lang - 设置语言\n/formats - 设置需要转换的格式\n/newpack - 开始打包\n/finish - 完成打包\n/cancel - 取消打包"
+
+LangApply = "语言设置为简体中文。"
+
+Formats = "当前格式为 {{.Formats}}。请选择格式。再次选择以取消。"
+FormatsApply = "格式设置为 {{.Formats}}。"
+FormatNone = "未选择格式。请至少选择一种格式。"
+FormatNoneErr = "未选择格式，请发送 /formats 来选择格式。"
+
+StickerConvertNotSupport = "不支持转换该类型的贴纸。"
+
+IdleNewPack = "开始打包，请发送表情包或者表情包集链接。"
+IdleAddSticker = "表情包已收到，请等待完成。"
+IdleAddStickerSet = "表情包集已收到，请等待完成。"
+IdleFinish = "你还没有开始打包，请发送 /newpack 。"
+IdleCancel = "你还没有开始打包，请发送 /newpack 。"
+
+PackingNewPack = "已经开始打包。"
+PackingAddSticker = "已添加该表情包，共计{{.Count}}。完成请发送 /finish，取消请发送 /cancel 。"
+PackingAddStickerSet = "已添加该表情包集，共计{{.Count}}。完成请发送 /finish，取消请发送 /cancel 。"
+PackingFinishEmpty = "未发送任何表情包或表情集链接，无法打包。若需要打包，请发送 /newpack 。"
+PackingFinishStart = "[1/4] 开始处理，共计{{.Count}}。请等待。"
+PackingFinishDownload = "[2/4] 已完成下载，开始转换格式，请等待。"
+PackingFinishConvert = "[3/4] 已完成转换，开始压缩，请等待。"
+PackingFinishZip = "[4/4] 已完成压缩，开始上传，请等待。"
+PackingCancel = "已取消打包。"
+
+Busy = "正在打包中，请等待完成后再试。"
+
+StickerSetExtract = "已解析该表情包集中{{.Count}}个表情包。"
