@@ -1,4 +1,4 @@
-Help = "Welcome to the StickerPacker bot, you can directly send the sticker or sticker set link, or you can send the following commands:\n/lang - set the language\n/formats - set the format to be converted\n/newpack - Start packing\n/finish - Finish packing\n/cancel - Cancel packing"
+Help = "Welcome to the StickerNinja bot, you can directly send the sticker or sticker set link, or you can send the following commands:\n/lang - set the language\n/formats - set the format to be converted\n/newpack - Start packing\n/finish - Finish packing\n/cancel - Cancel packing"
 
 LangApply = "Language is set to English."
 

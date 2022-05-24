@@ -1,4 +1,4 @@
-Help = "欢迎使用StickerPacker机器人，你可以直接发送表情包或表情集链接，也可以发送以下指令：\n/lang - 设置语言\n/formats - 设置需要转换的格式\n/newpack - 开始打包\n/finish - 完成打包\n/cancel - 取消打包"
+Help = "欢迎使用StickerNinja机器人，你可以直接发送表情包或表情集链接，也可以发送以下指令：\n/lang - 设置语言\n/formats - 设置需要转换的格式\n/newpack - 开始打包\n/finish - 完成打包\n/cancel - 取消打包"
 
 LangApply = "语言设置为简体中文。"
 
