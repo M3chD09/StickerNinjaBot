@@ -90,26 +90,8 @@ func (s *idleState) addStickerSet(stickerSetName string) {
 		},
 	}))
 
-	us := filestorage.NewUserStorage(s.instance.userID, s.instance.formats)
-	defer us.Remove("")
-
 	stickerFileIDs := s.instance.extractStickerSet(stickerSetName)
-	urlList := s.instance.fetchStickers(stickerFileIDs)
-	us.SaveStickers(urlList)
-	us.ConvertStickers()
-	filePathList := us.Zip()
-
-	if len(filePathList) == 1 {
-		s.instance.sendTextMessage(s.instance.localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID: "StickerConvertNotSupport",
-			},
-		}))
-	}
-
-	for _, filePath := range filePathList {
-		s.instance.sendFileMessage(filePath)
-	}
+	s.instance.sendStickers(stickerFileIDs)
 }
 
 func (s *idleState) finish() {

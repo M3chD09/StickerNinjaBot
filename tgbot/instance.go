@@ -13,6 +13,7 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
 
+	"github.com/M3chD09/StickerNinjaBot/filestorage"
 	"github.com/M3chD09/StickerNinjaBot/userdb"
 )
 
@@ -210,6 +211,49 @@ func (i *instance) fetchStickers(stickerFileIDs []string) []string {
 		urlList = append(urlList, url)
 	}
 	return urlList
+}
+
+func (i *instance) sendStickers(stickerFileIDs []string) {
+	us := filestorage.NewUserStorage(i.userID, i.formats)
+	defer us.Remove("")
+
+	urlList := i.fetchStickers(stickerFileIDs)
+	i.stickerFileIDs = []string{}
+	us.SaveStickers(urlList)
+
+	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID: "StickersDownload",
+		},
+	}))
+
+	us.ConvertStickers()
+
+	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID: "StickersConvert",
+		},
+	}))
+
+	filePathList := us.Zip()
+
+	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID: "StickersZip",
+		},
+	}))
+
+	if len(filePathList) == 1 {
+		i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID: "StickerConvertNotSupport",
+			},
+		}))
+	}
+
+	for _, filePath := range filePathList {
+		i.sendFileMessage(filePath)
+	}
 }
 
 func (i *instance) sendTextMessage(text string) {
