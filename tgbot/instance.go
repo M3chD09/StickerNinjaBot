@@ -291,9 +291,7 @@ func (i *instance) sendStickers(stickerFileIDs []string) {
 		}))
 	}
 
-	for _, filePath := range filePathList {
-		i.sendFileMessage(filePath)
-	}
+	i.sendMultiFileMessage(filePathList)
 }
 
 func (i *instance) sendTextMessage(text string) {
@@ -331,4 +329,16 @@ func (i *instance) sendFileMessage(filePath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (i *instance) sendMultiFileMessage(filePathList []string) {
+	var wg sync.WaitGroup
+	for x := range filePathList {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			i.sendFileMessage(filePathList[a])
+		}(x)
+	}
+	wg.Wait()
 }

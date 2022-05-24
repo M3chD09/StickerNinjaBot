@@ -62,9 +62,7 @@ func (s *idleState) addSticker(stickerFileID string) {
 		return
 	}
 
-	for _, filePath := range filePathList {
-		s.instance.sendFileMessage(filePath)
-	}
+	s.instance.sendMultiFileMessage(filePathList)
 }
 
 func (s *idleState) addStickerSet(stickerSetName string) {
