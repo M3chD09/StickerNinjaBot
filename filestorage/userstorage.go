@@ -63,14 +63,22 @@ func (u *UserStorage) Remove(sub string) {
 }
 
 func (u *UserStorage) Zip() []string {
-	var zipFilePathList []string
-	for _, f := range append(u.formats, "src") {
-		zipFileName := strconv.FormatInt(u.userID, 10) + "_" + f + ".zip"
-		zipFilePath := u.SubPath(zipFileName)
-		zipDirPath := u.SubPath(f)
-		zipDir(zipDirPath, zipFilePath)
-		zipFilePathList = append(zipFilePathList, zipFilePath)
+	dirs := append(u.formats, "src")
+	zipFilePathList := make([]string, len(dirs))
+
+	var wg sync.WaitGroup
+	for x := range dirs {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			zipFileName := strconv.FormatInt(u.userID, 10) + "_" + dirs[a] + ".zip"
+			zipFilePath := u.SubPath(zipFileName)
+			zipDirPath := u.SubPath(dirs[a])
+			zipDir(zipDirPath, zipFilePath)
+			zipFilePathList[a] = zipFilePath
+		}(x)
 	}
+	wg.Wait()
 	return zipFilePathList
 }
 
