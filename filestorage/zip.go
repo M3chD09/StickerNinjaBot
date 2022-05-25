@@ -2,16 +2,15 @@ package filestorage
 
 import (
 	"archive/zip"
-	"log"
 	"os"
 	"path/filepath"
 )
 
-func zipDir(dir, zipFilePath string) {
+func zipDir(dir, zipFilePath string) error {
 	// Get a Buffer to Write To
 	outFile, err := os.Create(zipFilePath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer outFile.Close()
 
@@ -19,40 +18,49 @@ func zipDir(dir, zipFilePath string) {
 	w := zip.NewWriter(outFile)
 
 	// Add some files to the archive.
-	addFiles(w, dir, "")
+	if err := addFiles(w, dir, ""); err != nil {
+		return err
+	}
 
 	// Make sure to check the error on Close.
-	defer w.Close()
+	if err := w.Close(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func addFiles(w *zip.Writer, basePath, baseInZip string) {
+func addFiles(w *zip.Writer, basePath, baseInZip string) error {
 	// Open the Directory
 	files, err := os.ReadDir(basePath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	for _, file := range files {
+		newBase := filepath.Join(basePath, file.Name())
+		newBaseInZip := filepath.Join(baseInZip, file.Name())
 		if !file.IsDir() {
-			dat, err := os.ReadFile(filepath.Join(basePath, file.Name()))
+			dat, err := os.ReadFile(newBase)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			// Add some files to the archive.
-			f, err := w.Create(filepath.Join(baseInZip, file.Name()))
+			f, err := w.Create(newBaseInZip)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
-			_, err = f.Write(dat)
-			if err != nil {
-				log.Fatal(err)
+			if _, err := f.Write(dat); err != nil {
+				return err
 			}
-		} else if file.IsDir() {
-
+		} else {
 			// Recurse
-			newBase := filepath.Join(basePath, file.Name())
-			addFiles(w, newBase, filepath.Join(baseInZip, file.Name()))
+			if err := addFiles(w, newBase, newBaseInZip); err != nil {
+				return err
+			}
 		}
 	}
+
+	return nil
 }

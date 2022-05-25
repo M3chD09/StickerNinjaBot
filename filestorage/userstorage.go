@@ -74,7 +74,9 @@ func (u *UserStorage) Zip() []string {
 			zipFileName := strconv.FormatInt(u.userID, 10) + "_" + dirs[a] + ".zip"
 			zipFilePath := u.SubPath(zipFileName)
 			zipDirPath := u.SubPath(dirs[a])
-			zipDir(zipDirPath, zipFilePath)
+			if err := zipDir(zipDirPath, zipFilePath); err != nil {
+				log.Fatal("UserStorage zip error: ", err)
+			}
 			zipFilePathList[a] = zipFilePath
 		}(x)
 	}
