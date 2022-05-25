@@ -1,8 +1,8 @@
 package filestorage
 
 import (
+	"errors"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,22 +23,27 @@ func NewStickerFromFilePath(filePath string) *Sticker {
 	return s
 }
 
-func (s *Sticker) Save(filePath string) {
+func (s *Sticker) Save(filePath string) error {
 	resp, err := http.Get(s.url)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("http status code is not 200")
+	}
+
 	file, err := os.Create(filePath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer file.Close()
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	s.filePath = filePath
+	return nil
 }
 
 func (s *Sticker) FileName() string {
@@ -59,7 +64,7 @@ func (s *Sticker) ReplaceExt(ext string) string {
 	return fileName[:len(fileName)-len(filepath.Ext(fileName))] + "." + ext
 }
 
-func (s *Sticker) Convert(dst string) string {
+func (s *Sticker) Convert(dst string) error {
 	switch s.Ext() {
 	case ".webp":
 		return webp2other(s.filePath, dst)
@@ -68,6 +73,6 @@ func (s *Sticker) Convert(dst string) string {
 	case ".tgs":
 		return tgs2other(s.filePath, dst)
 	default:
-		return ""
+		return errors.New("unsupported output file extension: " + s.Ext())
 	}
 }

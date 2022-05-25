@@ -1,10 +1,10 @@
 package filestorage
 
 import (
+	"errors"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -12,23 +12,23 @@ import (
 	"golang.org/x/image/webp"
 )
 
-func webp2other(webpPath, otherPath string) string {
+func webp2other(webpPath, otherPath string) error {
 	if filepath.Ext(webpPath) != ".webp" {
-		return ""
+		panic("input file must be .webp")
 	}
 
 	reader, err := os.Open(webpPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer reader.Close()
 	img, err := webp.Decode(reader)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	writer, err := os.Create(otherPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer writer.Close()
 
@@ -41,39 +41,40 @@ func webp2other(webpPath, otherPath string) string {
 	case ".gif":
 		err = gif.Encode(writer, img, nil)
 	default:
-		log.Println("unsupported file extension: " + ext)
-		return ""
+		return errors.New("unsupported output file extension: " + ext)
 	}
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	return otherPath
+	return nil
 }
 
-func webm2other(webmPath, otherPath string) string {
+func webm2other(webmPath, otherPath string) error {
 	// TODO
-	return ""
+	return errors.New("not implemented")
 }
 
-func tgs2other(tgsPath, otherPath string) string {
+func tgs2other(tgsPath, otherPath string) error {
 	if filepath.Ext(tgsPath) != ".tgs" {
-		return ""
+		panic("input file must be .tgs")
 	}
 
 	ext := filepath.Ext(otherPath)
 	ext = ext[1:]
 	if !libtgsconverter.SupportsExtension(ext) {
-		log.Println("unsupported file extension: " + ext)
-		return ""
+		return errors.New("unsupported output file extension: " + ext)
 	}
 
 	opt := libtgsconverter.NewConverterOptions()
 	opt.SetExtension(ext)
 	ret, err := libtgsconverter.ImportFromFile(tgsPath, opt)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	os.WriteFile(otherPath, ret, 0666)
 
-	return otherPath
+	if err := os.WriteFile(otherPath, ret, 0666); err != nil {
+		return err
+	}
+
+	return nil
 }

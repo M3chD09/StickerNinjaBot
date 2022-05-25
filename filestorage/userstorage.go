@@ -87,14 +87,19 @@ func (u *UserStorage) Zip() []string {
 func (u *UserStorage) SaveSingleSticker(url string) []string {
 	sticker := NewStickerFromURL(url)
 	filePath := filepath.Join(u.RootPath(), sticker.FileName())
-	sticker.Save(filePath)
+	if err := sticker.Save(filePath); err != nil {
+		log.Fatal("UserStorage SaveSingleSticker error: ", err)
+	}
 
 	var dstList []string
 	for _, f := range u.formats {
 		dst := u.SubPath(sticker.ReplaceExt(f))
-		if sticker.Convert(dst) != "" {
-			dstList = append(dstList, dst)
+		err := sticker.Convert(dst)
+		if err != nil {
+			log.Println("UserStorage SaveSingleSticker error: ", err)
+			continue
 		}
+		dstList = append(dstList, dst)
 	}
 	return dstList
 }
@@ -103,7 +108,9 @@ func (u *UserStorage) SaveSticker(url string) {
 	sticker := NewStickerFromURL(url)
 	u.MakeDir("src")
 	filePath := filepath.Join(u.SubPath("src"), sticker.FileName())
-	sticker.Save(filePath)
+	if err := sticker.Save(filePath); err != nil {
+		log.Fatal("UserStorage SaveSticker error: ", err)
+	}
 }
 
 func (u *UserStorage) SaveStickers(urlList []string) {
@@ -116,7 +123,9 @@ func (u *UserStorage) SaveStickers(urlList []string) {
 			defer wg.Done()
 			sticker := NewStickerFromURL(urlList[a])
 			filePath := filepath.Join(u.SubPath("src"), sticker.FileName())
-			sticker.Save(filePath)
+			if err := sticker.Save(filePath); err != nil {
+				log.Fatal("UserStorage SaveStickers error: ", err)
+			}
 		}(x)
 	}
 	wg.Wait()
@@ -137,7 +146,10 @@ func (u *UserStorage) ConvertStickers() {
 			defer wg.Done()
 			sticker := NewStickerFromFilePath(p)
 			for _, f := range u.formats {
-				sticker.Convert(filepath.Join(u.SubPath(f), sticker.ReplaceExt(f)))
+				err := sticker.Convert(filepath.Join(u.SubPath(f), sticker.ReplaceExt(f)))
+				if err != nil {
+					log.Println("UserStorage ConvertStickers error: ", err)
+				}
 			}
 		}(path)
 		return nil
