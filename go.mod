@@ -4,8 +4,8 @@ module github.com/M3chD09/StickerNinjaBot
 go 1.18
 
 require (
-	github.com/Benau/tgsconverter v0.0.0-20210809170556-99f4a4f6337f
 	github.com/BurntSushi/toml v1.1.0
+	github.com/M3chD09/tgsconverter v0.0.0-20220525070051-d36278fc1dd0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/joho/godotenv v1.4.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
