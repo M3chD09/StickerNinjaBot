@@ -30,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bot.Debug = os.Getenv("BOT_DEBUG") == "true"
+	bot.Debug, _ = strconv.ParseBool(os.Getenv("BOT_DEBUG"))
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
