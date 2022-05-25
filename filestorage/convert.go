@@ -1,7 +1,6 @@
 package filestorage
 
 import (
-	"errors"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -24,7 +23,7 @@ func webp2other(webpPath, otherPath string) error {
 	defer reader.Close()
 	img, err := webp.Decode(reader)
 	if err != nil {
-		return err
+		return NewConvertError("webp2other", webpPath, otherPath, err)
 	}
 	writer, err := os.Create(otherPath)
 	if err != nil {
@@ -41,17 +40,17 @@ func webp2other(webpPath, otherPath string) error {
 	case ".gif":
 		err = gif.Encode(writer, img, nil)
 	default:
-		return errors.New("unsupported output file extension: " + ext)
+		return NewConvertError("webp2other", webpPath, otherPath, ErrConvertOutputExtensionNotSupported)
 	}
 	if err != nil {
-		return err
+		return NewConvertError("webp2other", webpPath, otherPath, err)
 	}
 	return nil
 }
 
 func webm2other(webmPath, otherPath string) error {
 	// TODO
-	return errors.New("not implemented")
+	return NewConvertError("webm2other", webmPath, otherPath, ErrConvertInputExtensionNotSupported)
 }
 
 func tgs2other(tgsPath, otherPath string) error {
@@ -62,14 +61,14 @@ func tgs2other(tgsPath, otherPath string) error {
 	ext := filepath.Ext(otherPath)
 	ext = ext[1:]
 	if !libtgsconverter.SupportsExtension(ext) {
-		return errors.New("unsupported output file extension: " + ext)
+		return NewConvertError("tgs2other", tgsPath, otherPath, ErrConvertOutputExtensionNotSupported)
 	}
 
 	opt := libtgsconverter.NewConverterOptions()
 	opt.SetExtension(ext)
 	ret, err := libtgsconverter.ImportFromFile(tgsPath, opt)
 	if err != nil {
-		return err
+		return NewConvertError("tgs2other", tgsPath, otherPath, err)
 	}
 
 	if err := os.WriteFile(otherPath, ret, 0666); err != nil {

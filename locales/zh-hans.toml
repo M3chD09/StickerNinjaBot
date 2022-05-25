@@ -7,12 +7,22 @@ FormatsApply = "格式设置为 {{.Formats}}。"
 FormatNone = "未选择格式。请至少选择一种格式。"
 FormatNoneErr = "未选择格式，请发送 /formats 来选择格式。"
 
-StickerConvertNotSupport = "不支持转换该类型的贴纸。"
 StickersSizeTooLarge = "{{.FileName}} 文件太大，无法发送。请减少需要打包的表情包数量。"
 StickerCountTooMany = "表情包数量太多，最多可以打包{{.Count}}个。请重试。"
 StickersDownload = "[2/4] 已完成下载，开始转换格式，请等待。"
 StickersConvert = "[3/4] 已完成转换，开始打包，请等待。"
 StickersZip = "[4/4] 已完成压缩，开始上传，请等待。"
+
+StickerZipNone = "错误：没有要发送的压缩包。"
+
+StickerConvertInputExtensionNotSupportedError = "表情包转换失败：{{.Text}} 。 输入文件扩展名不支持。"
+StickerConvertOutputExtensionNotSupportedError = "表情包转换失败：{{.Text}} 。 输出文件扩展名不支持。"
+StickerConvertOtherError = "表情包转换失败：未知错误。"
+
+StickerDownloadStatusCodeError = "表情包下载失败：状态码{{.Text}}。"
+StickerDownloadOtherError = "表情包下载失败：未知错误。"
+
+StickerOtherError = "发生未知错误。"
 
 IdleNewPack = "开始打包，请发送表情包或者表情包集链接。"
 IdleAddSticker = "表情包已收到，请等待完成。"

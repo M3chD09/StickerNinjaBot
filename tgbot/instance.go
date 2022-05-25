@@ -101,9 +101,7 @@ func (i *instance) Help() {
 func (i *instance) Lang() {
 	msg := tgbotapi.NewMessage(i.userID, "Please select language")
 	msg.ReplyMarkup = langKeyboard
-	if _, err := i.bot.Send(msg); err != nil {
-		log.Fatal(err)
-	}
+	retryBotSend(i.bot, msg)
 }
 
 func (i *instance) LangApply(lang string) {
@@ -137,9 +135,7 @@ func (i *instance) Formats() {
 	}
 	msg := tgbotapi.NewMessage(i.userID, text)
 	msg.ReplyMarkup = formatsKeyboard
-	if _, err := i.bot.Send(msg); err != nil {
-		log.Fatal(err)
-	}
+	retryBotSend(i.bot, msg)
 }
 
 func (i *instance) FormatsApply(formatCode uint8) {
@@ -228,7 +224,8 @@ func (i *instance) fetchStickers(stickerFileIDs []string) []string {
 			defer wg.Done()
 			url, err := i.bot.GetFileDirectURL(stickerFileIDs[a])
 			if err != nil {
-				log.Fatal(err)
+				log.Println("Error in instance fetchStickers: ", err)
+				return
 			}
 			urlList[a] = url
 		}(x)
@@ -259,7 +256,9 @@ func (i *instance) sendStickers(stickerFileIDs []string) {
 
 	urlList := i.fetchStickers(stickerFileIDs)
 	i.stickerFileIDs = []string{}
-	us.SaveStickers(urlList)
+	if err := us.SaveStickers(urlList); err != nil {
+		i.sendErrorMessage(err)
+	}
 
 	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -267,7 +266,9 @@ func (i *instance) sendStickers(stickerFileIDs []string) {
 		},
 	}))
 
-	us.ConvertStickers()
+	if err := us.ConvertStickers(); err != nil {
+		i.sendErrorMessage(err)
+	}
 
 	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -275,7 +276,10 @@ func (i *instance) sendStickers(stickerFileIDs []string) {
 		},
 	}))
 
-	filePathList := us.Zip()
+	filePathList, err := us.Zip()
+	if err != nil {
+		i.sendErrorMessage(err)
+	}
 
 	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -283,12 +287,13 @@ func (i *instance) sendStickers(stickerFileIDs []string) {
 		},
 	}))
 
-	if len(filePathList) == 1 {
+	if len(filePathList) == 0 {
 		i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
 			DefaultMessage: &i18n.Message{
-				ID: "StickerConvertNotSupport",
+				ID: "StickerZipNone",
 			},
 		}))
+		return
 	}
 
 	i.sendMultiFileMessage(filePathList)
@@ -296,16 +301,39 @@ func (i *instance) sendStickers(stickerFileIDs []string) {
 
 func (i *instance) sendTextMessage(text string) {
 	msg := tgbotapi.NewMessage(i.userID, text)
-	_, err := i.bot.Send(msg)
-	if err != nil {
-		log.Fatal(err)
+	retryBotSend(i.bot, msg)
+}
+
+func (i *instance) sendErrorMessage(err error) {
+	msgId := ""
+	text := ""
+	if e, ok := err.(filestorage.CustomError); ok {
+		msgId = e.MessageID()
+		text = e.TemplateDataText()
+	} else {
+		msgId = "StickerOtherError"
 	}
+
+	i.sendTextMessage(i.localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID: msgId,
+		},
+		TemplateData: map[string]interface{}{
+			"Text": text,
+		},
+	}))
 }
 
 func (i *instance) sendFileMessage(filePath string) {
+	if filePath == "" {
+		return
+	}
+
 	b, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error in instance sendFileMessage: ", err)
+		i.sendErrorMessage(err)
+		return
 	}
 	fileName := filepath.Base(filePath)
 
@@ -325,10 +353,7 @@ func (i *instance) sendFileMessage(filePath string) {
 		Name:  fileName,
 		Bytes: b,
 	})
-	_, err = i.bot.Send(msg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	retryBotSend(i.bot, msg)
 }
 
 func (i *instance) sendMultiFileMessage(filePathList []string) {
@@ -341,4 +366,16 @@ func (i *instance) sendMultiFileMessage(filePathList []string) {
 		}(x)
 	}
 	wg.Wait()
+}
+
+func retryBotSend(bot *tgbotapi.BotAPI, msg tgbotapi.Chattable) {
+	var err error
+	for i := 0; i < 3; i++ {
+		_, err = bot.Send(msg)
+		if err == nil {
+			return
+		}
+		time.Sleep(time.Second * 3)
+	}
+	log.Fatal(err)
 }

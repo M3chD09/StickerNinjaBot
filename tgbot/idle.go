@@ -51,15 +51,9 @@ func (s *idleState) addSticker(stickerFileID string) {
 	defer us.Remove("")
 
 	urlList := s.instance.fetchStickers([]string{stickerFileID})
-	filePathList := us.SaveSingleSticker(urlList[0])
-
-	if len(filePathList) == 0 {
-		s.instance.sendTextMessage(s.instance.localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID: "StickerConvertNotSupport",
-			},
-		}))
-		return
+	filePathList, err := us.SaveSingleSticker(urlList[0])
+	if err != nil {
+		s.instance.sendErrorMessage(err)
 	}
 
 	s.instance.sendMultiFileMessage(filePathList)

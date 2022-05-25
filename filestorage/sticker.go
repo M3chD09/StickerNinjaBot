@@ -1,7 +1,6 @@
 package filestorage
 
 import (
-	"errors"
 	"io"
 	"net/http"
 	"os"
@@ -26,11 +25,11 @@ func NewStickerFromFilePath(filePath string) *Sticker {
 func (s *Sticker) Save(filePath string) error {
 	resp, err := http.Get(s.url)
 	if err != nil {
-		return err
+		return NewDownloadError(s.url, -1, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("http status code is not 200")
+		return NewDownloadError(s.url, resp.StatusCode, ErrDownloadStatusCode)
 	}
 
 	file, err := os.Create(filePath)
@@ -73,6 +72,6 @@ func (s *Sticker) Convert(dst string) error {
 	case ".tgs":
 		return tgs2other(s.filePath, dst)
 	default:
-		return errors.New("unsupported output file extension: " + s.Ext())
+		return NewConvertError("Convert", s.filePath, dst, ErrConvertInputExtensionNotSupported)
 	}
 }

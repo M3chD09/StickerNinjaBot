@@ -25,7 +25,7 @@ func Config(path string) string {
 
 	err := os.MkdirAll(storageRootPath, 0755)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	return storageRootPath
@@ -62,8 +62,19 @@ func (u *UserStorage) Remove(sub string) {
 	}
 }
 
-func (u *UserStorage) Zip() []string {
-	dirs := append(u.formats, "src")
+func (u *UserStorage) Zip() ([]string, error) {
+	var dirs []string
+	var err error
+	var once sync.Once
+
+	for _, d := range append(u.formats, "src") {
+		zipDirPath := u.SubPath(d)
+		if dir, err := os.ReadDir(zipDirPath); err != nil || len(dir) == 0 {
+			continue
+		}
+		dirs = append(dirs, d)
+	}
+
 	zipFilePathList := make([]string, len(dirs))
 
 	var wg sync.WaitGroup
@@ -74,47 +85,57 @@ func (u *UserStorage) Zip() []string {
 			zipFileName := strconv.FormatInt(u.userID, 10) + "_" + dirs[a] + ".zip"
 			zipFilePath := u.SubPath(zipFileName)
 			zipDirPath := u.SubPath(dirs[a])
-			if err := zipDir(zipDirPath, zipFilePath); err != nil {
-				log.Fatal("UserStorage zip error: ", err)
+			if e := zipDir(zipDirPath, zipFilePath); e != nil {
+				log.Println("Error in UserStorage zip: ", e)
+				once.Do(func() { err = e })
+				return
 			}
 			zipFilePathList[a] = zipFilePath
 		}(x)
 	}
 	wg.Wait()
-	return zipFilePathList
+	return zipFilePathList, err
 }
 
-func (u *UserStorage) SaveSingleSticker(url string) []string {
+func (u *UserStorage) SaveSingleSticker(url string) ([]string, error) {
+	var err error
+	var once sync.Once
+
 	sticker := NewStickerFromURL(url)
 	filePath := filepath.Join(u.RootPath(), sticker.FileName())
-	if err := sticker.Save(filePath); err != nil {
-		log.Fatal("UserStorage SaveSingleSticker error: ", err)
+	if e := sticker.Save(filePath); e != nil {
+		log.Println("Error in UserStorage SaveSingleSticker: ", e)
+		return nil, e
 	}
 
 	var dstList []string
 	for _, f := range u.formats {
 		dst := u.SubPath(sticker.ReplaceExt(f))
-		err := sticker.Convert(dst)
-		if err != nil {
-			log.Println("UserStorage SaveSingleSticker error: ", err)
+		if e := sticker.Convert(dst); e != nil {
+			log.Println("Error in UserStorage SaveSingleSticker: ", e)
+			once.Do(func() { err = e })
 			continue
 		}
 		dstList = append(dstList, dst)
 	}
-	return dstList
+	return dstList, err
 }
 
-func (u *UserStorage) SaveSticker(url string) {
+func (u *UserStorage) SaveSticker(url string) error {
 	sticker := NewStickerFromURL(url)
 	u.MakeDir("src")
 	filePath := filepath.Join(u.SubPath("src"), sticker.FileName())
 	if err := sticker.Save(filePath); err != nil {
-		log.Fatal("UserStorage SaveSticker error: ", err)
+		log.Println("Error in UserStorage SaveSticker: ", err)
+		return err
 	}
+	return nil
 }
 
-func (u *UserStorage) SaveStickers(urlList []string) {
+func (u *UserStorage) SaveStickers(urlList []string) error {
 	u.MakeDir("src")
+	var err error
+	var once sync.Once
 
 	var wg sync.WaitGroup
 	for x := range urlList {
@@ -123,21 +144,26 @@ func (u *UserStorage) SaveStickers(urlList []string) {
 			defer wg.Done()
 			sticker := NewStickerFromURL(urlList[a])
 			filePath := filepath.Join(u.SubPath("src"), sticker.FileName())
-			if err := sticker.Save(filePath); err != nil {
-				log.Fatal("UserStorage SaveStickers error: ", err)
+			if e := sticker.Save(filePath); e != nil {
+				log.Println("Error in UserStorage SaveStickers: ", e)
+				once.Do(func() { err = e })
 			}
 		}(x)
 	}
 	wg.Wait()
+	return err
 }
 
-func (u *UserStorage) ConvertStickers() {
+func (u *UserStorage) ConvertStickers() error {
+	var err error
+	var once sync.Once
+
 	for _, f := range u.formats {
 		u.MakeDir(f)
 	}
 
 	var wg sync.WaitGroup
-	filepath.WalkDir(u.SubPath("src"), func(path string, d fs.DirEntry, err error) error {
+	filepath.WalkDir(u.SubPath("src"), func(path string, d fs.DirEntry, _ error) error {
 		if d.IsDir() {
 			return nil
 		}
@@ -146,13 +172,16 @@ func (u *UserStorage) ConvertStickers() {
 			defer wg.Done()
 			sticker := NewStickerFromFilePath(p)
 			for _, f := range u.formats {
-				err := sticker.Convert(filepath.Join(u.SubPath(f), sticker.ReplaceExt(f)))
-				if err != nil {
-					log.Println("UserStorage ConvertStickers error: ", err)
+				e := sticker.Convert(filepath.Join(u.SubPath(f), sticker.ReplaceExt(f)))
+				if e != nil {
+					log.Println("Error in UserStorage ConvertStickers: ", e)
+					once.Do(func() { err = e })
 				}
 			}
 		}(path)
 		return nil
 	})
 	wg.Wait()
+
+	return err
 }
