@@ -9,10 +9,10 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/joho/godotenv v1.4.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
-	golang.org/x/image v0.0.0-20220413100746-70e8d0d3baa9
+	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/text v0.3.7
-	gorm.io/driver/mysql v1.3.3
-	gorm.io/driver/postgres v1.3.6
+	gorm.io/driver/mysql v1.3.4
+	gorm.io/driver/postgres v1.3.7
 	gorm.io/driver/sqlite v1.3.2
 	gorm.io/gorm v1.23.5
 )
@@ -32,7 +32,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/kettek/apng v0.0.0-20191108220231-414630eed80f // indirect
-	github.com/mattn/go-sqlite3 v1.14.12 // indirect
+	github.com/mattn/go-sqlite3 v1.14.13 // indirect
 	github.com/sizeofint/webpanimation v0.0.0-20210809145948-1d2b32119882 // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 )
