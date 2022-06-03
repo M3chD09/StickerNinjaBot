@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/M3chD09/tgsconverter/libtgsconverter"
+	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"golang.org/x/image/webp"
 )
 
@@ -49,8 +50,12 @@ func webp2other(webpPath, otherPath string) error {
 }
 
 func webm2other(webmPath, otherPath string) error {
-	// TODO
-	return NewConvertError("webm2other", webmPath, otherPath, ErrConvertInputExtensionNotSupported)
+	ext := filepath.Ext(otherPath)
+	if ext == ".gif" {
+		return ffmpeg.Input(webmPath, ffmpeg.KwArgs{}).Output(otherPath, ffmpeg.KwArgs{}).OverWriteOutput().ErrorToStdOut().Run()
+	}
+
+	return NewConvertError("webm2other", webmPath, otherPath, ErrConvertOutputExtensionNotSupported)
 }
 
 func tgs2other(tgsPath, otherPath string) error {
