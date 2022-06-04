@@ -27,6 +27,8 @@ Single image or zip file with multiple images will be sent to you, depending on 
 * Send command `/newpack` to start packing, then send any stickers or sticker set link to the bot, and receive converted stickers in a zip archive until the command `/finish` is sent, or cancel the packing by sending the command `/cancel`.
 
 ## Deploying
+### Deploy on [Heroku](https://heroku.com)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 ### Installation
 ```bash
 apt install -y ffmpeg

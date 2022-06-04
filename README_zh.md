@@ -21,6 +21,8 @@
 * 发送命令 `/newpack` 开始打包，然后将任何表情包或表情包集链接发送给机器人，发送命令 `/finish` 便可在 zip 存档中接收转换后的表情包，或者通过发送命令 `/cancel` 取消打包。
 
 ## 部署
+### 部署于 [Heroku](https://heroku.com)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 ### 安装
 ```bash
 apt install -y ffmpeg

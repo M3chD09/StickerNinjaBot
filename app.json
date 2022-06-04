@@ -1,0 +1,40 @@
+{
+    "name": "Sticker Ninja Bot",
+    "description": "Deploy Sticker Ninja Bot on Heroku.",
+    "keywords": [
+        "heroku",
+        "telegram"
+    ],
+    "repository": "https://github.com/M3chD09/StickerNinjaBot",
+    "env": {
+        "BOT_TOKEN": {
+            "description": "Telegram bot token.",
+            "value": ""
+        },
+        "BOT_WEBHOOK": {
+            "description": "Telegram bot webhook, where app-name is replaced with your app name.",
+            "value": "https://app-name.herokuapp.com/"
+        },
+        "STICKER_COUNT_LIMIT": {
+            "description": "The maximum number of stickers that can be sent in a single pack. Default is 100.",
+            "required": false
+        },
+        "DATABASE_TYPE": {
+            "description": "The type of database to use. Currently mysql, pgsql, and sqlite are supported.",
+            "value": "pgsql"
+        }
+    },
+    "addons": [
+        {
+            "plan": "heroku-postgresql"
+        }
+    ],
+    "buildpacks": [
+        {
+            "url": "heroku/go"
+        },
+        {
+            "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+        }
+    ]
+}
