@@ -2,7 +2,8 @@ package main
 
 import (
 	"crypto/rand"
-	"encoding/base64"
+	"crypto/sha1"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -66,9 +67,9 @@ func main() {
 
 	var updates tgbotapi.UpdatesChannel
 	if os.Getenv("BOT_WEBHOOK") != "" {
-		secretPath := make([]byte, 16)
+		secretPath := make([]byte, 20)
 		rand.Read(secretPath)
-		secretPath = []byte(base64.StdEncoding.EncodeToString(secretPath))
+		secretPath = []byte(fmt.Sprintf("%x", sha1.Sum(secretPath)))
 
 		wh, _ := tgbotapi.NewWebhook(os.Getenv("BOT_WEBHOOK") + string(secretPath))
 		_, err = bot.Request(wh)
