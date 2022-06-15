@@ -16,7 +16,7 @@ StickersZip = "[4/4] Compression completed, uploading started, please wait."
 StickerZipNone = "Error: No zip file to upload."
 
 StickerConvertInputExtensionNotSupportedError = "Sticker conversion failed: {{.Text}} . The input file extension is not supported."
-StickerConvertOutputExtensionNotSupportedError = "Sticker conversion failed: {{.Text}} . The output file extension is not supported."
+StickerConvertOutputExtensionNotSupportedError = "Sticker conversion failed: {{.Text}} . The output file extension is not supported. Please send /formats to select other formats."
 StickerConvertOtherError = "Sticker conversion failed: unknown error."
 
 StickerDownloadStatusCodeError = "Sticker download failed: status code {{.Text}}."

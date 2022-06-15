@@ -16,7 +16,7 @@ StickersZip = "[4/4] 已完成压缩，开始上传，请等待。"
 StickerZipNone = "错误：没有要发送的压缩包。"
 
 StickerConvertInputExtensionNotSupportedError = "表情包转换失败：{{.Text}} 。 输入文件扩展名不支持。"
-StickerConvertOutputExtensionNotSupportedError = "表情包转换失败：{{.Text}} 。 输出文件扩展名不支持。"
+StickerConvertOutputExtensionNotSupportedError = "表情包转换失败：{{.Text}} 。 输出文件扩展名不支持。请发送 /formats 来选择其它格式。"
 StickerConvertOtherError = "表情包转换失败：未知错误。"
 
 StickerDownloadStatusCodeError = "表情包下载失败：状态码{{.Text}}。"
