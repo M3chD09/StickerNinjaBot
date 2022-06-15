@@ -39,6 +39,8 @@ cp .env.example .env
 * `PORT`: 端口号。如果不使用 webhook，则可以留空。
 * `FILESTORAGE_PATH`: 下载的表情包存放的路径。默认为 `./storage`。
 * `STICKER_COUNT_LIMIT`: 打包的表情包数量限制。默认为 `100`。
+* `CACHE_TICK`: 用户缓存刷新的时间间隔。默认为 `10s`。
+* `CACHE_EXPIRE`: 用户缓存过期的时间。默认为 `15m`。
 * `DATABASE_TYPE`: 数据库类型。可以是 `mysql`、`pgsql` 或 `sqlite`。
 * `DATABASE_URL`: 数据库连接字符串。
 ### 运行

@@ -19,6 +19,14 @@
             "description": "The maximum number of stickers that can be sent in a single pack. Default is 100.",
             "required": false
         },
+        "CACHE_TICK": {
+            "description": "The interval at which the user cache is refreshed. The default is 10s.",
+            "required": false
+        },
+        "CACHE_EXPIRE": {
+            "description": "The time after which the user cache is expired. Default is 15m",
+            "required": false
+        },
         "DATABASE_TYPE": {
             "description": "The type of database to use. Currently mysql, pgsql, and sqlite are supported.",
             "value": "pgsql"
