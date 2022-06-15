@@ -21,7 +21,7 @@ import (
 func main() {
 	godotenv.Load()
 
-	tgbot.Config(os.Getenv("STICKER_COUNT_LIMIT"))
+	tgbot.Config(os.Getenv("STICKER_COUNT_LIMIT"), os.Getenv("CACHE_TICK"), os.Getenv("CACHE_EXPIRE"))
 	filestorage.Config(os.Getenv("FILESTORAGE_PATH"))
 	userdb.DBConfig(os.Getenv("DATABASE_TYPE"), os.Getenv("DATABASE_URL"))
 

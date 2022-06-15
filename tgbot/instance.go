@@ -19,7 +19,9 @@ import (
 )
 
 var stickerCountLimit = 100
-var userInstanceCache = userdb.NewCache[int64](time.Second*10, true)
+var userInstanceCache *userdb.Cache[int64]
+var userInstanceCacheTick time.Duration
+var userInstanceCacheExpire time.Duration
 var bundle *i18n.Bundle
 var langKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
@@ -56,12 +58,22 @@ func init() {
 	bundle.MustLoadMessageFile("locales/zh-hans.toml")
 }
 
-func Config(count string) {
-	if count != "" {
-		if c, err := strconv.Atoi(count); err == nil && c > 0 {
-			stickerCountLimit = c
-		}
+func Config(count, tick, expire string) {
+	var err error
+
+	if c, err := strconv.Atoi(count); err == nil && c > 0 {
+		stickerCountLimit = c
 	}
+
+	userInstanceCacheTick, err = time.ParseDuration(tick)
+	if err != nil {
+		userInstanceCacheTick = time.Second * 10
+	}
+	userInstanceCacheExpire, err = time.ParseDuration(expire)
+	if err != nil {
+		userInstanceCacheExpire = time.Minute * 15
+	}
+	userInstanceCache = userdb.NewCache[int64](userInstanceCacheTick, true)
 }
 
 func GetInstance(userID int64, bot *tgbotapi.BotAPI) *instance {
@@ -85,7 +97,7 @@ func GetInstance(userID int64, bot *tgbotapi.BotAPI) *instance {
 	i.packing = &packingState{instance: i}
 	i.busy = &busyState{instance: i}
 	i.currentState = i.idle
-	userInstanceCache.Set(userID, i, time.Hour)
+	userInstanceCache.Set(userID, i, userInstanceCacheExpire)
 
 	return i
 }

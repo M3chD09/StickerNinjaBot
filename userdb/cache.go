@@ -15,14 +15,14 @@ type item struct {
 	expire time.Duration
 }
 
-type cache[T key] struct {
+type Cache[T key] struct {
 	items            map[T]*item
 	mux              *sync.RWMutex
 	autoUpdateExpire bool
 }
 
-func NewCache[T key](tick time.Duration, autoUpdateExpire bool) *cache[T] {
-	c := &cache[T]{
+func NewCache[T key](tick time.Duration, autoUpdateExpire bool) *Cache[T] {
+	c := &Cache[T]{
 		items:            make(map[T]*item),
 		mux:              &sync.RWMutex{},
 		autoUpdateExpire: autoUpdateExpire,
@@ -31,7 +31,7 @@ func NewCache[T key](tick time.Duration, autoUpdateExpire bool) *cache[T] {
 	return c
 }
 
-func (c *cache[T]) Get(key T) (interface{}, bool) {
+func (c *Cache[T]) Get(key T) (interface{}, bool) {
 	c.mux.RLock()
 	defer c.mux.RUnlock()
 	if v, ok := c.items[key]; !ok || time.Unix(v.start, 0).Add(v.expire).Unix() < time.Now().Unix() {
@@ -45,7 +45,7 @@ func (c *cache[T]) Get(key T) (interface{}, bool) {
 	}
 }
 
-func (c *cache[T]) Set(key T, value interface{}, expire time.Duration) {
+func (c *Cache[T]) Set(key T, value interface{}, expire time.Duration) {
 	c.mux.Lock()
 	defer c.mux.Unlock()
 	c.items[key] = &item{
@@ -55,13 +55,13 @@ func (c *cache[T]) Set(key T, value interface{}, expire time.Duration) {
 	}
 }
 
-func (c *cache[T]) Delete(key T) {
+func (c *Cache[T]) Delete(key T) {
 	c.mux.Lock()
 	defer c.mux.Unlock()
 	delete(c.items, key)
 }
 
-func (c *cache[T]) clean(tick time.Duration) {
+func (c *Cache[T]) clean(tick time.Duration) {
 	for range time.Tick(tick) {
 		c.mux.Lock()
 		for k, v := range c.items {
