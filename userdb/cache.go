@@ -10,22 +10,22 @@ type key interface {
 }
 
 type item struct {
-	value  interface{}
-	start  int64
-	expire time.Duration
+	value      interface{}
+	start      int64
+	expiration time.Duration
 }
 
 type Cache[T key] struct {
-	items            map[T]*item
-	mux              *sync.RWMutex
-	autoUpdateExpire bool
+	items                map[T]*item
+	mux                  *sync.RWMutex
+	autoUpdateExpiration bool
 }
 
-func NewCache[T key](tick time.Duration, autoUpdateExpire bool) *Cache[T] {
+func NewCache[T key](tick time.Duration, autoUpdateExpiration bool) *Cache[T] {
 	c := &Cache[T]{
-		items:            make(map[T]*item),
-		mux:              &sync.RWMutex{},
-		autoUpdateExpire: autoUpdateExpire,
+		items:                make(map[T]*item),
+		mux:                  &sync.RWMutex{},
+		autoUpdateExpiration: autoUpdateExpiration,
 	}
 	go c.clean(tick)
 	return c
@@ -34,24 +34,24 @@ func NewCache[T key](tick time.Duration, autoUpdateExpire bool) *Cache[T] {
 func (c *Cache[T]) Get(key T) (interface{}, bool) {
 	c.mux.RLock()
 	defer c.mux.RUnlock()
-	if v, ok := c.items[key]; !ok || time.Unix(v.start, 0).Add(v.expire).Unix() < time.Now().Unix() {
+	if v, ok := c.items[key]; !ok || time.Unix(v.start, 0).Add(v.expiration).Unix() < time.Now().Unix() {
 		delete(c.items, key)
 		return nil, false
 	} else {
-		if c.autoUpdateExpire {
+		if c.autoUpdateExpiration {
 			v.start = time.Now().Unix()
 		}
 		return v.value, true
 	}
 }
 
-func (c *Cache[T]) Set(key T, value interface{}, expire time.Duration) {
+func (c *Cache[T]) Set(key T, value interface{}, expiration time.Duration) {
 	c.mux.Lock()
 	defer c.mux.Unlock()
 	c.items[key] = &item{
-		value:  value,
-		start:  time.Now().Unix(),
-		expire: expire,
+		value:      value,
+		start:      time.Now().Unix(),
+		expiration: expiration,
 	}
 }
 
@@ -65,7 +65,7 @@ func (c *Cache[T]) clean(tick time.Duration) {
 	for range time.Tick(tick) {
 		c.mux.Lock()
 		for k, v := range c.items {
-			if time.Unix(v.start, 0).Add(v.expire).Unix() < time.Now().Unix() {
+			if time.Unix(v.start, 0).Add(v.expiration).Unix() < time.Now().Unix() {
 				delete(c.items, k)
 			}
 		}

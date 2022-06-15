@@ -23,7 +23,7 @@
             "description": "The interval at which the user cache is refreshed. The default is 10s.",
             "required": false
         },
-        "CACHE_EXPIRE": {
+        "CACHE_EXPIRATION": {
             "description": "The time after which the user cache is expired. Default is 15m",
             "required": false
         },

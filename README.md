@@ -46,7 +46,7 @@ Edit the `.env` file to configure the bot:
 * `FILESTORAGE_PATH`: The path to the directory where the downloaded stickers will be stored. Default is `./storage`.
 * `STICKER_COUNT_LIMIT`: The maximum number of stickers that can be sent in a single pack. Default is `100`.
 * `CACHE_TICK`: The interval at which the user cache is refreshed. Default is `10s`.
-* `CACHE_EXPIRE`: The time after which the user cache is expired. Default is `15m`.
+* `CACHE_EXPIRATION`: The time after which the user cache is expired. Default is `15m`.
 * `DATABASE_TYPE`: The type of database to use. Currently `mysql`, `pgsql`, and `sqlite` are supported.
 * `DATABASE_URL`: The url of the database to connect to.
 ### Running
