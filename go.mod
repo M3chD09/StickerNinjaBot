@@ -14,14 +14,14 @@ require (
 	golang.org/x/text v0.3.7
 	gorm.io/driver/mysql v1.3.4
 	gorm.io/driver/postgres v1.3.7
-	gorm.io/driver/sqlite v1.3.2
-	gorm.io/gorm v1.23.5
+	gorm.io/driver/sqlite v1.3.4
+	gorm.io/gorm v1.23.6
 )
 
 require (
 	github.com/Benau/go_rlottie v0.0.0-20210807002906-98c1b2421989 // indirect
 	github.com/av-elier/go-decimal-to-rational v0.0.0-20191127152832-89e6aad02ecf // indirect
-	github.com/aws/aws-sdk-go v1.38.20 // indirect
+	github.com/aws/aws-sdk-go v1.44.34 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
