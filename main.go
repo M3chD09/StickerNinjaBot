@@ -105,7 +105,7 @@ func main() {
 			}
 
 			instance := tgbot.GetInstance(update.CallbackQuery.Message.Chat.ID, bot)
-			if f, err := strconv.ParseUint(update.CallbackQuery.Data, 10, 64); err == nil {
+			if f, err := strconv.ParseUint(update.CallbackQuery.Data, 10, 8); err == nil {
 				instance.FormatsApply(uint8(f))
 			} else {
 				instance.LangApply(update.CallbackQuery.Data)
