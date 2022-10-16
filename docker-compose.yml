@@ -1,0 +1,10 @@
+version: '3.9'
+
+services:
+  app:
+    image: 'm3chd09/stickerninjabot:latest'
+    build: './'
+    volumes:
+      - './.env:/app/.env'
+      - './data.db:/app/data.db'
+    restart: always
