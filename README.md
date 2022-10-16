@@ -2,6 +2,7 @@
 
 [![Go](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/go.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/go.yml)
 [![CodeQL](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/codeql-analysis.yml)
+[![Docker](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/docker.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/docker.yml)
 [![Heroku](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/heroku.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/heroku.yml)
 
 [中文文档](README_zh.md)
