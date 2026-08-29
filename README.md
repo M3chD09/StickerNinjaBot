@@ -3,7 +3,6 @@
 [![Go](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/go.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/go.yml)
 [![CodeQL](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/codeql-analysis.yml)
 [![Docker](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/docker.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/docker.yml)
-[![Heroku](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/heroku.yml/badge.svg)](https://github.com/M3chD09/StickerNinjaBot/actions/workflows/heroku.yml)
 
 [中文文档](README_zh.md)
 
@@ -28,16 +27,23 @@ Single image or zip file with multiple images will be sent to you, depending on 
 * Send command `/newpack` to start packing, then send any stickers or sticker set link to the bot, and receive converted stickers in a zip archive until the command `/finish` is sent, or cancel the packing by sending the command `/cancel`.
 
 ## Deploying
-### Deploy on [Heroku](https://heroku.com)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+### Docker
+Build and run with [docker-compose](docker-compose.yml):
+```bash
+cp .env.example .env   # edit BOT_TOKEN first
+docker-compose up -d --build
+```
 ### Installation
 ```bash
-apt install -y ffmpeg
+# System dependencies
+apt install -y ffmpeg   # required for .webm (video sticker) -> gif conversion
+
 git clone https://github.com/M3chD09/StickerNinjaBot
 cd StickerNinjaBot
-go build
+go build                # requires Go 1.27+, see go.mod
 cp .env.example .env
 ```
+> **Note**: the project has a CGo dependency (`go_rlottie`) for `.tgs` animated sticker conversion. A C compiler (e.g. `gcc`) is required to build it locally. Docker and CI builds provide it automatically.
 ### Configuration
 Edit the `.env` file to configure the bot:  
 * `BOT_TOKEN`: Your telegram bot token. Get it from [Telegram Botfather](https://telegram.me/botfather).

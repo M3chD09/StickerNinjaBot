@@ -1,6 +1,7 @@
 package filestorage
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"os"
@@ -51,14 +52,14 @@ func (u *UserStorage) SubPath(sub string) string {
 func (u *UserStorage) MakeDir(sub string) {
 	err := os.MkdirAll(u.SubPath(sub), 0755)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error in UserStorage MakeDir: ", err)
 	}
 }
 
 func (u *UserStorage) Remove(sub string) {
 	err := os.RemoveAll(u.SubPath(sub))
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error in UserStorage Remove: ", err)
 	}
 }
 
@@ -143,7 +144,9 @@ func (u *UserStorage) SaveStickers(urlList []string) error {
 		go func(a int) {
 			defer wg.Done()
 			sticker := NewStickerFromURL(urlList[a])
-			filePath := filepath.Join(u.SubPath("src"), sticker.FileName())
+			// Prefix with a zero-padded index so os.ReadDir in Zip()/ConvertStickers()
+			// orders files by the original sticker order, not by filename.
+			filePath := filepath.Join(u.SubPath("src"), fmt.Sprintf("%04d_%s", a, sticker.FileName()))
 			if e := sticker.Save(filePath); e != nil {
 				log.Println("Error in UserStorage SaveStickers: ", e)
 				once.Do(func() { err = e })

@@ -31,7 +31,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bot.Debug, _ = strconv.ParseBool(os.Getenv("BOT_DEBUG"))
+	debug, err := strconv.ParseBool(os.Getenv("BOT_DEBUG"))
+	if err != nil {
+		debug = false
+	}
+	bot.Debug = debug
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
@@ -68,10 +72,15 @@ func main() {
 	var updates tgbotapi.UpdatesChannel
 	if os.Getenv("BOT_WEBHOOK") != "" {
 		secretPath := make([]byte, 20)
-		rand.Read(secretPath)
+		if _, err := rand.Read(secretPath); err != nil {
+			log.Fatal("Unable to generate webhook secret", err)
+		}
 		secretPath = []byte(fmt.Sprintf("%x", sha1.Sum(secretPath)))
 
-		wh, _ := tgbotapi.NewWebhook(os.Getenv("BOT_WEBHOOK") + string(secretPath))
+		wh, err := tgbotapi.NewWebhook(os.Getenv("BOT_WEBHOOK") + string(secretPath))
+		if err != nil {
+			log.Fatal("Unable to set webhook", err)
+		}
 		_, err = bot.Request(wh)
 		if err != nil {
 			log.Fatal(err)
@@ -85,7 +94,16 @@ func main() {
 			log.Printf("Telegram callback failed: %s", info.LastErrorMessage)
 		}
 		updates = bot.ListenForWebhook("/" + string(secretPath))
-		go http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+
+		port := os.Getenv("PORT")
+		if port == "" {
+			log.Fatal("PORT is required when using a webhook")
+		}
+		go func() {
+			if err := http.ListenAndServe(":"+port, nil); err != nil {
+				log.Fatal("Unable to listen for webhook", err)
+			}
+		}()
 	} else {
 		wh := tgbotapi.DeleteWebhookConfig{DropPendingUpdates: false}
 		_, err = bot.Request(wh)

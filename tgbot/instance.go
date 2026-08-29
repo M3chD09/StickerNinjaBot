@@ -389,5 +389,5 @@ func retryBotSend(bot *tgbotapi.BotAPI, msg tgbotapi.Chattable) {
 		}
 		time.Sleep(time.Second * 3)
 	}
-	log.Fatal(err)
+	log.Println("Error in retryBotSend: ", err)
 }

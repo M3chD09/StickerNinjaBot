@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
+
+var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 type Sticker struct {
 	url      string
@@ -23,7 +26,7 @@ func NewStickerFromFilePath(filePath string) *Sticker {
 }
 
 func (s *Sticker) Save(filePath string) error {
-	resp, err := http.Get(s.url)
+	resp, err := httpClient.Get(s.url)
 	if err != nil {
 		return NewDownloadError(s.url, -1, err)
 	}

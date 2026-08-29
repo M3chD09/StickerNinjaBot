@@ -21,16 +21,24 @@
 * 发送命令 `/newpack` 开始打包，然后将任何表情包或表情包集链接发送给机器人，发送命令 `/finish` 便可在 zip 存档中接收转换后的表情包，或者通过发送命令 `/cancel` 取消打包。
 
 ## 部署
-### 部署于 [Heroku](https://heroku.com)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+### Docker
+使用 [docker-compose](docker-compose.yml) 构建并运行：
+```bash
+cp .env.example .env   # 先编辑 BOT_TOKEN
+docker-compose up -d --build
+```
 ### 安装
 ```bash
-apt install -y ffmpeg
+# 系统依赖
+apt install -y ffmpeg   # .webm（视频贴纸）转 gif 时需要
+
 git clone https://github.com/M3chD09/StickerNinjaBot
 cd StickerNinjaBot
-go build
+go build                # 需要 Go 1.27+，参见 go.mod
 cp .env.example .env
 ```
+
+> **注意**：本项目依赖 CGo（`go_rlottie`）用于 `.tgs` 动画贴纸转换。本地构建需要 C 编译器（如 `gcc`）。Docker 和 CI 构建会自动提供。
 ### 配置
 编辑 `.env` 文件来配置机器人：
 * `BOT_TOKEN`: 机器人的 API 令牌。可以在 [Telegram BotFather](https://telegram.me/botfather) 中获取。

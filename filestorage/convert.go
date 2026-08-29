@@ -14,7 +14,7 @@ import (
 
 func webp2other(webpPath, otherPath string) error {
 	if filepath.Ext(webpPath) != ".webp" {
-		panic("input file must be .webp")
+		return ErrConvertInputExtensionNotSupported
 	}
 
 	reader, err := os.Open(webpPath)
@@ -60,7 +60,7 @@ func webm2other(webmPath, otherPath string) error {
 
 func tgs2other(tgsPath, otherPath string) error {
 	if filepath.Ext(tgsPath) != ".tgs" {
-		panic("input file must be .tgs")
+		return ErrConvertInputExtensionNotSupported
 	}
 
 	ext := filepath.Ext(otherPath)

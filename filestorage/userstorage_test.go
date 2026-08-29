@@ -2,13 +2,14 @@ package filestorage
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestUserStorage(t *testing.T) {
 	storageRootPath := Config("")
 	userStorage := NewUserStorage(1, []string{"png"})
-	if userStorage.RootPath() != "storage/1" {
+	if userStorage.RootPath() != filepath.Join("storage", "1") {
 		t.Errorf("UserStorage.RootPath() error %v", userStorage.RootPath())
 	}
 	if _, err := os.Stat(userStorage.RootPath()); os.IsNotExist(err) {

@@ -32,15 +32,25 @@ func NewCache[T key](tick time.Duration, autoUpdateExpiration bool) *Cache[T] {
 }
 
 func (c *Cache[T]) Get(key T) (interface{}, bool) {
+	if c.autoUpdateExpiration {
+		// autoUpdateExpiration writes v.start, so it must hold the write
+		// lock to avoid a data race with clean() and other Get calls.
+		c.mux.Lock()
+		defer c.mux.Unlock()
+		if v, ok := c.items[key]; !ok || time.Unix(v.start, 0).Add(v.expiration).Unix() < time.Now().Unix() {
+			delete(c.items, key)
+			return nil, false
+		} else {
+			v.start = time.Now().Unix()
+			return v.value, true
+		}
+	}
+
 	c.mux.RLock()
 	defer c.mux.RUnlock()
 	if v, ok := c.items[key]; !ok || time.Unix(v.start, 0).Add(v.expiration).Unix() < time.Now().Unix() {
-		delete(c.items, key)
 		return nil, false
 	} else {
-		if c.autoUpdateExpiration {
-			v.start = time.Now().Unix()
-		}
 		return v.value, true
 	}
 }
